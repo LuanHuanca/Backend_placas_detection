@@ -1,0 +1,117 @@
+# Backend - Sistema de Detección de Placas Vehiculares
+
+## 🚀 Funcionalidades Principales
+- **Procesamiento de video en tiempo real** (15-30 FPS)
+- **Detección de vehículos** usando modelos YOLO/SSD
+- **Reconocimiento OCR de placas** (Tesseract/EasyOCR)
+- Validación de formato de placas (Regex)
+- **Almacenamiento en MySQL** con registro histórico
+- **WebSockets** para alertas en tiempo real
+- API REST documentada con Swagger/Redoc
+
+## 🛠 Stack Tecnológico
+| Tecnología         | Uso                              |
+|--------------------|----------------------------------|
+| **FastAPI**        | Framework principal del backend |
+| **OpenCV**         | Procesamiento de video/frames   |
+| **PyTesseract**    | OCR para lectura de placas      |
+| **YOLOv8**         | Modelo de detección de objetos  |
+| **SQLAlchemy**     | ORM para MySQL                   |
+| **WebSockets**     | Comunicación en tiempo real     |
+| **Uvicorn**        | Servidor ASGI                   |
+
+## 📥 Instalación
+
+### Requisitos Previos
+- Python 3.9+
+- MySQL 8+
+- Tesseract OCR instalado ([Guía de instalación](https://tesseract-ocr.github.io/tessdoc/Installation.html))
+- Git
+
+### Pasos de Configuración
+1. **Clonar repositorio:**
+```bash
+git clone https://github.com/tu-usuario/deteccion-placas.git
+cd deteccion-placas/backend
+```
+2. **Crear entorno virtual:**
+
+```bash
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate     # Windows
+```
+3. **Instalar dependencias:**
+
+```bash
+pip install -r requirements.txt
+```
+4. **Configurar base de datos:**
+
+```sql
+CREATE DATABASE placas_db;
+-- Ejecutar script SQL proporcionado en /database/schema.sql
+```
+5. **Configurar variables de entorno (.env):**
+
+```sql
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=tu_password_mysql
+DB_NAME=placas_db
+```
+6. **Iniciar servidor:**
+
+```bash
+uvicorn app.main:app --reload
+```
+
+## 🌐 Endpoints Clave
+
+| Método   | Endpoint                     | Descripción                                  |
+|----------|------------------------------|----------------------------------------------|
+| POST     | `/detecciones/procesar-video`| Subir video para análisis (MP4, AVI)         |
+| GET      | `/placas`                    | Listar todas las placas detectadas           |
+| GET      | `/detecciones/{id}`          | Obtener detalles de una detección específica |
+| WS       | `/alertas/ws`                | Canal WebSocket para recibir alertas         |
+
+## 📄 Documentación API
+- **Swagger UI:** http://localhost:8000/docs  
+- **Redoc:** http://localhost:8000/redoc  
+
+## 🧪 Ejemplos de Uso
+
+### 1. Procesar video
+```bash
+curl -X POST -F "file=@trafico.mp4" http://localhost:8000/detecciones/procesar-video?camara_id=1
+```
+### 🔧 Estructura de Carpetas
+```bash
+backend/
+├── app/
+│   ├── core/          # Configuración y seguridad
+│   ├── db/            # Modelos y conexión MySQL
+│   ├── routes/        # Endpoints API
+│   ├── services/      # Lógica de negocio (OCR, video processing)
+│   └── main.py        # Punto de entrada
+├── requirements.txt
+└── .env.example
+```
+
+### ⚠️ Notas Importantes
+* Modelos YOLO: Colocar los archivos .weights en /app/services/models
+
+* Tesseract: Verificar que esté en el PATH del sistema
+
+*  Async: Usar async/await para operaciones I/O intensivas
+
+* Seguridad: No exponer endpoints sin autenticación en producción
+
+
+Este formato incluye:
+1. Tabla responsive para endpoints
+2. Sintaxis de código con highlighting apropiado
+3. Estructura de directorios en formato árbol
+4. Lista de notas importantes con formato claro
+5. Enlaces funcionales a la documentación
+6. Separación visual clara entre secciones
