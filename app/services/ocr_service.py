@@ -15,36 +15,54 @@ def extract_plate_text(image):
     text = pytesseract.image_to_string(thresh, config="--psm 11")
     return text.strip()
 
-# Expresión regular obligatoria: formato como AB-12-CDE
+# Configuración especializada
+CHAR_WHITELIST = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-'
+REQUIRED_LENGTH = 5  # Longitud total sin contar guiones
+CHAR_REPLACEMENTS = {
+    'O': '0', 'I': '1', 'Z': '2', 'S': '5',
+    'B': '8', 'D': '0', 'T': '7', 'G': '6'
+}
 
-def ocr_placa_optimizado(plate_img):
+def enhance_plate_image(plate_img):
+    """Mejora la imagen de la placa para OCR"""
+    # Convertir a escala de grises
     gray = cv2.cvtColor(plate_img, cv2.COLOR_BGR2GRAY)
-    gray = cv2.equalizeHist(gray)
-    _, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    
+    # Reducción de ruido
+    denoised = cv2.fastNlMeansDenoising(gray, h=10, templateWindowSize=7, searchWindowSize=21)
+    
+    # Mejora de contraste
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+    contrast = clahe.apply(denoised)
+    
+    # Binarización adaptativa
+    thresh = cv2.adaptiveThreshold(contrast, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                                  cv2.THRESH_BINARY, 11, 2)
+    
+    # Mejorar caracteres
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2,2))
+    processed = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
+    
+    return processed
 
-    # Primera pasada OCR
-    ocr_results = reader.readtext(thresh)
-    for result in ocr_results:
-        text = result[1].upper()
-        text = re.sub(r'[^A-Z0-9\-]', '', text)
-        # Si no tiene los dos guiones, intenta reconstruir
-        if text.count("-") != 2:
-            text = text.replace(" ", "")
-            if len(text) >= 7:
-                text = f"{text[:2]}-{text[2:4]}-{text[4:7]}"
-        if PLACA_REGEX.match(text):
-            return text.strip()
+def correct_ocr_text(text):
+    """Corrige errores comunes de OCR"""
+    # Normalización básica
+    text = text.upper().replace(" ", "").replace(".", "-")
+    
+    # Reemplazo de caracteres
+    corrected = []
+    for char in text:
+        corrected.append(CHAR_REPLACEMENTS.get(char, char))
+    
+    # Unir y limpiar
+    return ''.join(corrected)
 
-    # Segunda pasada OCR
-    ocr_results = reader.readtext(gray)
-    for result in ocr_results:
-        text = result[1].upper()
-        text = re.sub(r'[^A-Z0-9\-]', '', text)
-        if text.count("-") != 2:
-            text = text.replace(" ", "")
-            if len(text) >= 7:
-                text = f"{text[:2]}-{text[2:4]}-{text[4:7]}"
-        if PLACA_REGEX.match(text):
-            return text.strip()
-
-    return ""
+def validate_plate_format(text):
+    # Limpiar y normalizar
+    clean_text = re.sub(r'[^A-Z0-9]', '', text.upper())  # Eliminar todo excepto letras y números
+    
+    # Longitud esperada de placas: típicamente entre 6 y 8 caracteres
+    if 6 <= len(clean_text) <= 8:
+        return True
+    return False

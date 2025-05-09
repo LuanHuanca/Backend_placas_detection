@@ -3,6 +3,7 @@ import cv2
 import easyocr
 import re
 
+
 # Carga el modelo de detección de placas
 model = YOLO("app/models/license_plate_detector.pt")
 
