@@ -4,7 +4,8 @@ from fastapi.responses import FileResponse
 from app.db.database import get_db
 from app.models.schemas import Deteccion
 from app.services.video_processor import process_video 
-from app.services.process_image import process_image 
+from app.services.process_image import process_image
+from app.services.process_video import process_video2 
 
 router = APIRouter(prefix="/detecciones", tags=["detecciones"])
 
@@ -19,6 +20,18 @@ async def procesar_video(
     
     resultados = await process_video(file, camara_id, db)
     return {"detecciones": resultados}
+
+@router.post("/procesar-video2")
+async def procesar_video2(
+    file: UploadFile):
+    if not file.content_type.startswith("video/"):
+        raise HTTPException(400, "Formato de archivo no válido")
+    
+    resultados = await process_video2(file)
+    return {
+        "video": FileResponse(resultados["processed_video"]),
+        "placas": resultados["detected_texts"]
+    }
 
 @router.post("/procesar-imagen")
 async def procesar_imagen(file: UploadFile):
