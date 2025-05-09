@@ -28,7 +28,7 @@ async def procesar_imagen(file: UploadFile):
     placas_detectadas = await process_image(file)
     return {
         "image": FileResponse(placas_detectadas["processed_image"]),
-        "placas": placas_detectadas["placas"]
+        "placas": placas_detectadas["detected_texts"]
     }
 
 @router.get("/", response_model=list[Deteccion])
