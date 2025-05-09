@@ -47,10 +47,6 @@ logs/
 .DS_Store
 Thumbs.db
 
-### Base de Datos ###
-# Volcados y backups
-*.sql
-*.dump
 
 ### Angular (si está en el mismo repositorio) ###
 node_modules/
