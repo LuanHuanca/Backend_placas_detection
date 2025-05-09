@@ -19,5 +19,5 @@ async def procesar_video(
     return {"detecciones": resultados}
 
 @router.get("/", response_model=list[Deteccion])
-def get_detecciones(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return db.query(Deteccion).offset(skip).limit(limit).all()
+def get_detecciones(db: Session = Depends(get_db)):
+    return db.query(Deteccion).all()

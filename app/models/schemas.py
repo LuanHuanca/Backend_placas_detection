@@ -16,7 +16,7 @@ class Camara(CamaraBase):
     created_at: datetime
     
     class Config:
-        from_attributes = True  # Equivalente a orm_mode en Pydantic v2
+        from_attributes = True  
 
 # Esquema para Detecciones
 class DeteccionBase(BaseModel):

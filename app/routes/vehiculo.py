@@ -22,6 +22,6 @@ def get_vehiculo(vehiculo_id: int, db: Session = Depends(get_db)):
     return Vehiculo.model_validate(vehiculo)
 
 @router.get("/", response_model=list[Vehiculo])
-def get_all_vehiculos(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    vehiculos = db.query(VehiculoDB).offset(skip).limit(limit).all()
+def get_all_vehiculos(db: Session = Depends(get_db)):
+    vehiculos = db.query(VehiculoDB).all()
     return [Vehiculo.model_validate(v) for v in vehiculos]

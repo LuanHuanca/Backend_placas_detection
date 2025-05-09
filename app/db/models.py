@@ -1,5 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Float, Text
 from .database import Base
+from sqlalchemy.sql import func
+
 
 class Camara(Base):
     __tablename__ = "camaras"
@@ -7,7 +9,7 @@ class Camara(Base):
     ubicacion = Column(String(255))
     descripcion = Column(Text)
     ip_camara = Column(String(20))
-    created_at = Column(DateTime)
+    created_at = Column(DateTime, server_default=func.now()) 
 
 class Vehiculo(Base):
     __tablename__ = "vehiculos"

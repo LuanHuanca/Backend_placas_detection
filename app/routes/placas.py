@@ -22,6 +22,6 @@ def get_placa(placa_id: int, db: Session = Depends(get_db)):
     return Placa.from_orm(placa)
 
 @router.get("/", response_model=list[Placa])
-def get_all_placas(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    placas = db.query(PlacaModel).offset(skip).limit(limit).all()
+def get_all_placas(db: Session = Depends(get_db)):
+    placas = db.query(PlacaModel).all()
     return [Placa.from_orm(placa) for placa in placas]
