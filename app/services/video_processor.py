@@ -2,18 +2,16 @@ import cv2
 import numpy as np
 import tempfile
 from fastapi import UploadFile
-from app.services.ocr_service import extract_plate_text  # Si no lo usas, puedes quitarlo
+from app.services.ocr_service import extract_plate_text 
 from app.db.models import Deteccion, Placa
 from datetime import datetime
 from ultralytics import YOLO
 import easyocr
 import re
 import base64
-# test_model.py
 from ultralytics import YOLO
-model = YOLO("app/models/license_plate_detector.pt")
-print("Modelo cargado exitosamente!")
-reader = easyocr.Reader(['en'])
+from app.utils.resources import model, reader
+
 
 async def process_video(file: UploadFile, camara_id: int, db):
     results = []
