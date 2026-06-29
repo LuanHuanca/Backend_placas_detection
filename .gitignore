@@ -61,6 +61,3 @@ dist/
 ### Docker ###
 # Archivos temporales de Docker
 docker-compose.override.yml
-temp_auto_push.bat
-temp_interactive_push.bat
-.gitignore
